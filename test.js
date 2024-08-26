@@ -7,10 +7,16 @@ import { sleep, check } from 'k6';
 }; */
 export const options = {
     stages: [
-        { duration: '10s', target: 10 }, // เพิ่ม VUs เป็น 10 ใน 10 วินาที
-        { duration: '20s', target: 20 }, // เพิ่ม VUs เป็น 20 ใน 20 วินาที
-        { duration: '10s', target: 0 },  // ลด VUs เป็น 0 ใน 10 วินาที (เย็นลง)
+        { duration: '5s', target: 500 },
+        { duration: '10s', target: 1000 },
+        { duration: '5s', target: 0 },
     ],
+    cloud: {
+        // Project: Load Test
+        projectID: 3710879,
+        // Test runs with the same name groups test runs together.
+        name: 'Test (26/08/2024-10:43:00)'
+    }
 };
 
 export default function() {
