@@ -20,7 +20,8 @@ export const options = {
 };
 
 export default function() {
-    const endpoint = 'https://hms-golang-inquiry-prod.azurewebsites.net/ping';
+    // const endpoint = 'http://localhost:8080/api/v1/systems/healthcheck';
+    const endpoint = 'http://localhost:3000/api/v1/chat-acp/chatroom/list-chatroom';
 
     const payload = JSON.stringify({
         key1: 'value1',
