@@ -3,17 +3,18 @@ import { SharedArray } from 'k6/data';
 import { check, sleep } from 'k6';
 import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
 import { scenario } from 'k6/execution'; // ใช้สำหรับดึงลำดับการรัน (Iteration)
+import encoding from 'k6/encoding';
 
 // 1. กำหนด Options (สำคัญมากเพื่อให้มีข้อมูลรัน)
 export const options = {
-    vus: 5,            // จำนวนคนจำลอง
-    iterations: 10,    // จำนวนครั้งที่จะรันทั้งหมด (หารเฉลี่ยกันในหมู่ VUs)
+    vus: 1,            // จำนวนคนจำลอง
+    iterations: 1,    // จำนวนครั้งที่จะรันทั้งหมด (หารเฉลี่ยกันในหมู่ VUs)
 };
 
 // 2. โหลดไฟล์ข้อมูล CSV
 const csvData = new SharedArray('csv data', function () {
-    // ต้องมั่นใจว่าไฟล์ data.csv อยู่ที่เดียวกับไฟล์ .js นี้
-    return papaparse.parse(open('./data.csv'), { header: true }).data;
+    // ต้องมั่นใจว่าไฟล์ .csv อยู่ที่เดียวกับไฟล์ .js นี้
+    return papaparse.parse(open('./scenario_1.csv'), { header: true }).data;
 });
 
 export default function () {
@@ -22,11 +23,20 @@ export default function () {
     const rowIndex = scenario.iterationInTest % csvData.length;
     const row = csvData[rowIndex];
 
+    const encodedEmployeeId = encoding.b64encode(row.employee_id);
+    const encodedInstanceServerId = encoding.b64encode(row.instance_server_id);
+    const encodedInstanceServerChannelId = encoding.b64encode(row.instance_server_channel_id);
+
     const url = 'http://localhost:3001';
 
     const payload = JSON.stringify({
-        field1: row.field1,
-        field2: row.field2,
+        _compgrp: 'hrs',
+        _comp: 'calculation_normal',
+        _action: 'calculate_month',
+        year_month: row.year_month,
+        employee_id: encodedEmployeeId,
+        instance_server_id: encodedInstanceServerId,
+        instance_server_channel_id: encodedInstanceServerChannelId,
     });
 
     const params = {
